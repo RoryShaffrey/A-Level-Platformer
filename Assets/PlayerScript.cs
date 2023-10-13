@@ -8,16 +8,19 @@ public class PlayerScript : MonoBehaviour
     public float speed;
     bool facingRight = true;
 
-    public float jumpPower;
-    bool IsGrounded;
-    public float fallMultiplier;
-    private float newGravity;
+    [SerializeField] float jumpPower = 7f;
+    private bool IsGrounded;
+    private float gravity;
+    [SerializeField] private float fallMultiplier = 1.2f;
+    [SerializeField] private float hangTimeMultiplier = 0.25f;
 
     private Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        gravity = Physics2D.gravity.magnitude;
     }
 
     // Update is called once per frame
@@ -32,11 +35,10 @@ public class PlayerScript : MonoBehaviour
         {
             flip();
         }
-
         void flip()
         {
             facingRight = !facingRight; //toggle the facingRight boolean (true/false)
-            Vector3 scale = transform.localScale; //Get current scale of character
+            Vector2 scale = transform.localScale; //Get current scale of character
             scale.x *= -1; // Flip the character's sprite by changing the scale
             transform.localScale = scale; //set new scale to character
         }
@@ -45,14 +47,23 @@ public class PlayerScript : MonoBehaviour
         //basic jump
         if (Input.GetButtonDown("Jump") && IsGrounded)
             {
-                rb.AddForce(new Vector2(rb.velocity.x, jumpPower));
+            rb.velocity = jumpPower * Vector2.up;
             }
 
-            //faster fall
-            //if (rb.velocity.y < 0)
-            //{
-                //rb.gravityScale = newGravity * fallMultiplier;
-            //}
+        //faster fall
+        if (rb.velocity.y > -2)
+        {
+            rb.gravityScale = 2f;
+        }
+        else if (rb.velocity.y < 5 && rb.velocity.y > -2)
+        {
+            rb.gravityScale *= hangTimeMultiplier;
+        }
+        else
+        {
+            rb.gravityScale *= fallMultiplier;
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

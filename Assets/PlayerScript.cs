@@ -8,19 +8,19 @@ public class PlayerScript : MonoBehaviour
     public float speed;
     bool facingRight = true;
 
-    [SerializeField] float jumpPower = 7f;
-    private bool IsGrounded;
-    private float gravity;
-    [SerializeField] private float fallMultiplier = 1.2f;
-    [SerializeField] private float hangTimeMultiplier = 0.25f;
+    [SerializeField] float jumpPower = 10f;
+    private bool IsGrounded; //only jump again if grounded
+    [SerializeField] private float fallMultiplier = 1.01f;
+    [SerializeField] private float hangTimeMultiplier = 0.95f;
+    private float maxJumpTimeCopy;
+    [SerializeField] private float maxJumpTime;
+    private bool IsJumping; //for variable jump height
 
     private Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
-        gravity = Physics2D.gravity.magnitude;
     }
 
     // Update is called once per frame
@@ -45,15 +45,17 @@ public class PlayerScript : MonoBehaviour
 
         //Jumping
         //basic jump
-        if (Input.GetButtonDown("Jump") && IsGrounded)
+        if (Input.GetButtonDown("Jump") && IsGrounded) //If a jump key is pressed
             {
-            rb.velocity = jumpPower * Vector2.up;
+            IsJumping = true; //reset IsJumping
+            maxJumpTimeCopy = maxJumpTime; //reset maxJumpTime
+            rb.velocity = new Vector2(rb.velocity.x, jumpPower);
             }
 
         //faster fall
         if (rb.velocity.y > -2)
         {
-            rb.gravityScale = 2f;
+            rb.gravityScale = 4f;
         }
         else if (rb.velocity.y < 5 && rb.velocity.y > -2)
         {
@@ -62,6 +64,24 @@ public class PlayerScript : MonoBehaviour
         else
         {
             rb.gravityScale *= fallMultiplier;
+        }
+
+        //variable jump height
+        if (Input.GetButton("Jump") && IsJumping == true) //If a jump key is currently being pressed
+        {
+            if (maxJumpTimeCopy > 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpPower);
+                maxJumpTimeCopy -= Time.deltaTime;
+            }
+            else
+            {
+                IsJumping = false; //Happens when the max time to hold the jump button down is reached
+            }
+        }
+        if (Input.GetButtonUp("Jump")) //If a jump button is released
+        {
+            IsJumping = false;
         }
 
     }

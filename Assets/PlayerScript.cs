@@ -8,10 +8,10 @@ public class PlayerScript : MonoBehaviour
     public float speed;
     bool facingRight = true;
 
-    [SerializeField] float jumpPower = 10f;
+    [SerializeField] private float jumpPower = 15f;
     private bool IsGrounded; //only jump again if grounded
     [SerializeField] private float fallMultiplier = 1.01f;
-    [SerializeField] private float hangTimeMultiplier = 0.95f;
+    [SerializeField] private float hangTimeMultiplier = 0.98f;
     private float maxJumpTimeCopy;
     [SerializeField] private float maxJumpTime;
     private bool IsJumping; //for variable jump height
@@ -29,7 +29,7 @@ public class PlayerScript : MonoBehaviour
         //Movement
         //basic movement
         move = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(speed * move, rb.velocity.y);
+        rb.velocity = new Vector2(speed * move, rb.velocity.y); //(move)
             
         if ((facingRight && move < 0) || (!facingRight && move > 0)) //(move is -1 if going left, 0 if still and 1 if going right)
         {
@@ -49,21 +49,21 @@ public class PlayerScript : MonoBehaviour
             {
             IsJumping = true; //reset IsJumping
             maxJumpTimeCopy = maxJumpTime; //reset maxJumpTime
-            rb.velocity = new Vector2(rb.velocity.x, jumpPower);
+            rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
             }
 
         //faster fall
-        if (rb.velocity.y > -2)
+        if (rb.velocity.y < -2)//if the player is falling with velocity > 2
         {
-            rb.gravityScale = 4f;
+            rb.gravityScale *= fallMultiplier;
         }
-        else if (rb.velocity.y < 5 && rb.velocity.y > -2)
+        else if (!IsGrounded && (rb.velocity.y < 2 && rb.velocity.y > -2))//if the player is near the peak of the jump
         {
             rb.gravityScale *= hangTimeMultiplier;
         }
         else
         {
-            rb.gravityScale *= fallMultiplier;
+            rb.gravityScale = 8f;
         }
 
         //variable jump height
@@ -71,8 +71,8 @@ public class PlayerScript : MonoBehaviour
         {
             if (maxJumpTimeCopy > 0)
             {
-                rb.velocity = new Vector2(rb.velocity.x, jumpPower);
-                maxJumpTimeCopy -= Time.deltaTime;
+                rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
+                maxJumpTimeCopy -= Time.deltaTime; //reduce timer by the time taken between frames
             }
             else
             {
@@ -84,9 +84,14 @@ public class PlayerScript : MonoBehaviour
             IsJumping = false;
         }
 
+        //clamping/limiting max fall speed
+        if (rb.velocity.y < -10f)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -10f);
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision) //when colliding with ground
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
@@ -94,7 +99,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnCollisionExit2D(Collision2D collision) //when leaving the ground
     {
         if (collision.gameObject.CompareTag("Ground"))
         {

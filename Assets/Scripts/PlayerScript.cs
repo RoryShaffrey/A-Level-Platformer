@@ -26,7 +26,7 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Movement
+        #region Movement
         //basic movement
         move = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(speed * move, rb.velocity.y); //(move)
@@ -42,8 +42,9 @@ public class PlayerScript : MonoBehaviour
             scale.x *= -1; // Flip the character's sprite by changing the scale
             transform.localScale = scale; //set new scale to character
         }
+        #endregion
 
-        //Jumping
+        #region Jumping
         //basic jump
         if (Input.GetButtonDown("Jump") && IsGrounded) //If a jump key is pressed
             {
@@ -52,24 +53,10 @@ public class PlayerScript : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
             }
 
-        //faster fall
-        if (rb.velocity.y < -2)//if the player is falling with velocity > 2
-        {
-            rb.gravityScale *= fallMultiplier;
-        }
-        else if (!IsGrounded && (rb.velocity.y < 2 && rb.velocity.y > -2))//if the player is near the peak of the jump
-        {
-            rb.gravityScale *= hangTimeMultiplier;
-        }
-        else
-        {
-            rb.gravityScale = 8f;
-        }
-
         //variable jump height
         if (Input.GetButton("Jump") && IsJumping == true) //If a jump key is currently being pressed
         {
-            if (maxJumpTimeCopy > 0)
+            if (maxJumpTimeCopy > 0) //if the max time to hold the jump button is greater than 0
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
                 maxJumpTimeCopy -= Time.deltaTime; //reduce timer by the time taken between frames
@@ -85,9 +72,27 @@ public class PlayerScript : MonoBehaviour
         }
 
         //clamping/limiting max fall speed
-        if (rb.velocity.y < -10f)
+        if (rb.velocity.y < -10f) //If the player is falling with a velocity faster than 10
         {
-            rb.velocity = new Vector2(rb.velocity.x, -10f);
+            rb.velocity = new Vector2(rb.velocity.x, -10f); //set the player's velocity to 10
+        }
+        #endregion
+    }
+
+    private void FixedUpdate() //Called every 0.02 seconds rather than once per frame
+    {
+        //faster fall
+        if (rb.velocity.y < -2)//if the player is falling with velocity > 2
+        {
+            rb.gravityScale *= fallMultiplier; //fall faster
+        }
+        else if (!IsGrounded && (rb.velocity.y < 2 && rb.velocity.y > -2))//if the player is near the peak of the jump
+        {
+            rb.gravityScale *= hangTimeMultiplier; //reduce gravity/falling speed reduced - gives the player more control
+        }
+        else//at the start of the jump
+        {
+            rb.gravityScale = 8f; //normal gravity
         }
     }
 

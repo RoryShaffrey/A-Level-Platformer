@@ -12,6 +12,7 @@ public class PlayerScript : MonoBehaviour
     private bool IsGrounded; //only jump again if grounded
     [SerializeField] private float fallMultiplier = 1.01f;
     [SerializeField] private float hangTimeMultiplier = 0.98f;
+    private bool falling;
     private float maxJumpTimeCopy;
     [SerializeField] private float maxJumpTime;
     private bool IsJumping; //for variable jump height
@@ -21,6 +22,7 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        falling = false;
     }
 
     // Update is called once per frame
@@ -72,9 +74,9 @@ public class PlayerScript : MonoBehaviour
         }
 
         //clamping/limiting max fall speed
-        if (rb.velocity.y < -10f) //If the player is falling with a velocity faster than 10
+        if (rb.velocity.y < -45f) //If the player is falling with a velocity faster than 10
         {
-            rb.velocity = new Vector2(rb.velocity.x, -10f); //set the player's velocity to 10
+            rb.velocity = new Vector2(rb.velocity.x, -45f); //set the player's velocity to 10
         }
         #endregion
     }
@@ -82,9 +84,10 @@ public class PlayerScript : MonoBehaviour
     private void FixedUpdate() //Called every 0.02 seconds rather than once per frame
     {
         //faster fall
-        if (rb.velocity.y < -2)//if the player is falling with velocity > 2
+        if (falling == false && rb.velocity.y < -2)//if the player is falling with velocity > 2
         {
             rb.gravityScale *= fallMultiplier; //fall faster
+            falling = true;
         }
         else if (!IsGrounded && (rb.velocity.y < 2 && rb.velocity.y > -2))//if the player is near the peak of the jump
         {
@@ -94,6 +97,11 @@ public class PlayerScript : MonoBehaviour
         {
             rb.gravityScale = 8f; //normal gravity
         }
+        if (rb.velocity.y != 0)
+        {
+            Debug.Log(rb.velocity.y);
+        }
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision) //when colliding with ground
@@ -101,6 +109,7 @@ public class PlayerScript : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             IsGrounded = true;
+            falling = false;
         }
     }
 

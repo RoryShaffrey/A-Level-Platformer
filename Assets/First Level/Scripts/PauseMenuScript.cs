@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PauseMenuScript : MonoBehaviour
+{
+
+    public static bool paused = false;
+    public GameObject pauseMenu;
+
+    // Update is called once per frame
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) //if the escape key is pressed
+        {
+            if (paused) //if paused is true
+            {
+                Resume(); //call the "Resume" function
+            }
+            else //if paused is false
+            {
+                Pause(); //call the "Pause" function
+            }
+        }
+    }
+
+    public void Resume() //Called either when the escape button is pressed again or the resume button is pressed
+    {
+        Time.timeScale = 1f; //set time to normal
+        pauseMenu.SetActive(false); //make the pause menu disappear
+        paused = false; //set the variable 'paused' to false
+    }
+    void Pause() //when the escape key is pressed
+    {
+        //(Direct opposite of resume)
+        Time.timeScale = 0f; //pause time in the game
+        pauseMenu.SetActive(true); //makes the pause menu appear
+        paused = true; //set the variable 'paused' to true
+    }
+
+    public void Quit() //when the 'Quit' button is pressed
+    {
+        Application.Quit(); //quits the application
+    }
+}

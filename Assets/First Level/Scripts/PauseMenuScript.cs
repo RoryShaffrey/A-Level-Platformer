@@ -7,6 +7,7 @@ public class PauseMenuScript : MonoBehaviour
 
     public static bool paused = false;
     public GameObject pauseMenu;
+    [SerializeField] GameObject ConfirmationWindow;
 
     // Update is called once per frame
     private void Update()
@@ -41,5 +42,13 @@ public class PauseMenuScript : MonoBehaviour
     public void Quit() //when the 'Quit' button is pressed
     {
         Application.Quit(); //quits the application
+    }
+    public void OpenConfirmationWindow() //when the 'Quit' button is pressed
+    {
+        ConfirmationWindow.SetActive(true); //show the confirmation window
+    }
+    public void CloseConfirmationWindow() //when the 'Cancel' button is pressed
+    {
+        ConfirmationWindow.SetActive(false); //hide the confirmation window
     }
 }

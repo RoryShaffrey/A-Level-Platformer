@@ -97,10 +97,6 @@ public class PlayerScript : MonoBehaviour
         {
             rb.gravityScale = 8f; //normal gravity
         }
-        if (rb.velocity.y != 0)
-        {
-            Debug.Log(rb.velocity.y);
-        }
         
     }
 

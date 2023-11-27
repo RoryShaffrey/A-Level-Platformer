@@ -9,7 +9,7 @@ public class StartMenuScript : MonoBehaviour
 
     public void Play() //can't use "start" as it is a keyword which will instantly run this code as soon as the game loads
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); //goes to the next scene (the first level)
     }
 
     public void Quit() //when the 'Confirm' button is pressed

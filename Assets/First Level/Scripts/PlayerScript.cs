@@ -8,13 +8,13 @@ public class PlayerScript : MonoBehaviour
     public float speed;
     bool facingRight = true;
 
-    [SerializeField] private float jumpPower = 15f;
+    public float jumpPower = 16f;
     private bool IsGrounded; //only jump again if grounded
-    [SerializeField] private float fallMultiplier = 1.01f;
-    [SerializeField] private float hangTimeMultiplier = 0.98f;
-    private bool falling;
-    private float maxJumpTimeCopy;
+    [SerializeField] private float fallMultiplier = 1.5f;
+    [SerializeField] private float hangTimeMultiplier = 0.8f;
+    private bool falling; //used to prevent the fallMultipler gravity scale from affecting the character after it collides with the ground
     [SerializeField] private float maxJumpTime;
+    private float maxJumpTimeCopy;
     private bool IsJumping; //for variable jump height
 
     private Rigidbody2D rb;
@@ -33,15 +33,15 @@ public class PlayerScript : MonoBehaviour
         move = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(speed * move, rb.velocity.y); //(move)
             
-        if ((facingRight && move < 0) || (!facingRight && move > 0)) //(move is -1 if going left, 0 if still and 1 if going right)
+        if ((facingRight && move < 0) || (!facingRight && move > 0)) //move is -1 if going left, 0 if still and 1 if going right
         {
             flip();
         }
-        void flip()
+        void flip() //used to flip the character's sprite so it is facing the correct direction based on which way it is moving
         {
             facingRight = !facingRight; //toggle the facingRight boolean (true/false)
             Vector2 scale = transform.localScale; //Get current scale of character
-            scale.x *= -1; // Flip the character's sprite by changing the scale
+            scale.x *= -1; // flip the character's sprite by changing the scale - reflects it in the y axis
             transform.localScale = scale; //set new scale to character
         }
         #endregion
@@ -51,10 +51,10 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetButtonDown("Jump") && IsGrounded) //If a jump key is pressed
             {
             IsJumping = true; //reset IsJumping
-            maxJumpTimeCopy = maxJumpTime; //reset maxJumpTime
+            maxJumpTimeCopy = maxJumpTime; //assign maxJumpTime to maxJumpTimeCopy
             rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
             }
-
+            
         //variable jump height
         if (Input.GetButton("Jump") && IsJumping == true) //If a jump key is currently being pressed
         {
@@ -97,7 +97,6 @@ public class PlayerScript : MonoBehaviour
         {
             rb.gravityScale = 8f; //normal gravity
         }
-        
     }
 
     private void OnCollisionEnter2D(Collision2D collision) //when colliding with ground

@@ -52,11 +52,11 @@ public class PlayerScript : MonoBehaviour
             {
             IsJumping = true; //reset IsJumping
             maxJumpTimeCopy = maxJumpTime; //assign maxJumpTime to maxJumpTimeCopy
-            rb.velocity = new Vector2(rb.velocity.x, jumpPower); //(jump)
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + jumpPower); //(jump)
             }
             
         //variable jump height
-        if (Input.GetButton("Jump") && IsJumping == true) //If a jump key is currently being pressed
+        if (Input.GetButton("Jump") && IsJumping == true) //If  jump key is currently being pressed
         {
             if (maxJumpTimeCopy > 0) //if the max time to hold the jump button is greater than 0
             {
@@ -68,15 +68,15 @@ public class PlayerScript : MonoBehaviour
                 IsJumping = false; //Happens when the max time to hold the jump button down is reached
             }
         }
-        if (Input.GetButtonUp("Jump")) //If a jump button is released
+        if (Input.GetButtonUp("Jump")) //If the jump button is released
         {
             IsJumping = false;
         }
 
         //clamping/limiting max fall speed
-        if (rb.velocity.y < -45f) //If the player is falling with a velocity faster than 10
+        if (rb.velocity.y < -45f) //If the player is falling with a velocity faster than 45
         {
-            rb.velocity = new Vector2(rb.velocity.x, -45f); //set the player's velocity to 10
+            rb.velocity = new Vector2(rb.velocity.x, -45f); //set the player's falling velocity to 45
         }
         #endregion
     }

@@ -115,7 +115,7 @@ public class PlayerScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            //IsGrounded = true;
+            IsGrounded = true;
             jumpsRemaining = maxJumps;
             maxJumpTimeCopy = maxJumpTime; //assign maxJumpTime to maxJumpTimeCopy
             falling = false;
@@ -127,6 +127,8 @@ public class PlayerScript : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             IsGrounded = false;
+            falling = true;
+            rb.gravityScale *= hangTimeMultiplier; //set the player's gravity to the second half of the jump stage
         }
     }
 }

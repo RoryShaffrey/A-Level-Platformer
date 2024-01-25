@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement; //for moving between scenes
 public class FinishScript : MonoBehaviour
 {
     public Animator crossfade;
-    public float transitionTime = 0.75f;
+    public float transitionTime = 0.75f; //default value 0.75 seconds
 
     private void OnTriggerEnter2D(Collider2D collider) //If something collides with it
     {

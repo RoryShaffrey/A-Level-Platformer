@@ -13,14 +13,20 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float fallMultiplier = 1.5f;
     [SerializeField] private float hangTimeMultiplier = 0.8f;
     private bool falling; //used to prevent the fallMultipler gravity scale from affecting the character after it collides with the ground
-    [SerializeField] private float maxJumpTime;
-    private float maxJumpTimeCopy;
+    [SerializeField] private float maxJumpTime = 0.3f;
+    public float maxJumpTimeCopy; //the variable that is actually subtracted from
     private bool IsJumping; //for variable jump height
-    public int maxJumps = 2;
-    private int jumpsRemaining; //number of jumps the player can do before they have to reach the ground again
+    private int maxJumps = 2;
+    public int jumpsRemaining; //number of jumps the player can do before they have to reach the ground again
+
+    public bool canDash = true;
+    private bool IsDashing;
+    [SerializeField] private float dashTime = 0.25f;
+    [SerializeField] private float dashVelocity = 25f;
+    private Vector2 dashDirection;
+    private TrailRenderer trailRenderer;
 
     public bool canMove; //to prevent the player moving during transitions
-
     private Rigidbody2D rb;
     // Start is called before the first frame update
     void Start() //used to initially set values
@@ -28,6 +34,7 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         falling = false;
         canMove = true;
+        trailRenderer = GetComponent<TrailRenderer>();
     }
 
     // Update is called once per frame
@@ -86,11 +93,45 @@ public class PlayerScript : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, -45f); //set the player's falling velocity to 45
             }
             #endregion
+
+            #region Dashing
+            if (Input.GetButtonDown("Dash") && canDash)
+            {
+                IsDashing = true;
+                dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")); //set the direction to the way the user is moving the character
+                if (dashDirection == Vector2.zero) //if no direction keys are being pressed
+                {
+                    dashDirection = new Vector2(transform.localScale.x, 0); //set the dash direction to the direction the character is facing 
+                }
+                trailRenderer.emitting = true; //starts the trail emitting
+                canDash = false;
+                StartCoroutine(StopDash()); //calls the coroutine "StopDash()"
+            }
+
+            if (IsDashing)
+            {
+                rb.velocity = dashDirection.normalized * dashVelocity; //.normalized keeps the dashDirection vector's direction, but sets its length 1
+            }
+
+            if (IsGrounded)
+            {
+                canDash = true;
+            }
+            #endregion
         }
         else //otherwise don't allow them to control the character and make it stationary
         {
             rb.velocity = new Vector2(0, 0);
         }
+    }
+
+    private IEnumerator StopDash()
+    {
+        yield return new WaitForSeconds(dashTime); //delay for the duration of the variable dashTime
+        trailRenderer.emitting = false; //turn off the trail
+        IsDashing = false;
+        falling = true;
+        rb.gravityScale = 6.4f; //set the player's gravity to the second half of the jump stage
     }
 
     private void FixedUpdate() //Called every 0.02 seconds rather than once per frame

@@ -170,6 +170,10 @@ public class PlayerScript : MonoBehaviour
             IsGrounded = false;
             falling = true;
             rb.gravityScale *= hangTimeMultiplier; //set the player's gravity to the second half of the jump stage
+            if (jumpsRemaining == 2) //if the player walks off a platform
+            {
+                jumpsRemaining --; //lose a jump
+            }
         }
     }
 }

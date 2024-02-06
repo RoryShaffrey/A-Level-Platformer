@@ -26,22 +26,24 @@ public class PauseMenuScript : MonoBehaviour
     }
     void Pause() //when the escape key is pressed
     {
-        Time.timeScale = 0f; //pause time in the game
         pauseMenu.SetActive(true); //makes the pause menu appear
+        Time.timeScale = 0f; //pause time in the game
         paused = true; //set the variable 'paused' to true
     }
-    public void Resume() //called either when the escape button is pressed again or the resume button is pressed
+
+    public void Resume()
     {
-        //direct opposite of Pause()
-        Time.timeScale = 1f; //set time to normal
-        pauseMenu.SetActive(false); //make the pause menu disappear
-        paused = false; //set the variable 'paused' to false
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f;
+        paused = false;
     }
 
-    public void Quit() //when the 'Quit' button is pressed
+    public void Quit() //when the 'Yes' button is pressed
     {
-        Application.Quit(); //quits the application
+        Application.Quit(); //quit the game
+        Debug.Log("Closed");
     }
+
     public void OpenConfirmationWindow() //when the 'Quit' button is pressed
     {
         ConfirmationWindow.SetActive(true); //show the confirmation window

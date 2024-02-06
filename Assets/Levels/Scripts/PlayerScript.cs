@@ -26,6 +26,13 @@ public class PlayerScript : MonoBehaviour
     private Vector2 dashDirection;
     private TrailRenderer trailRenderer;
 
+    private float coyoteTime = 0.1f; //the time the player can still jump after walking off a platform
+    private float coyoteTimeCopy; //the variable that is actually subtracted from
+
+    private bool slowed = false;
+    private float origSpeed; //variable used to store original speed
+    private float origJumpPower; //variable used to store original jumpPower
+
     public bool canMove; //to prevent the player moving during transitions
     private Rigidbody2D rb;
     // Start is called before the first frame update
@@ -35,11 +42,27 @@ public class PlayerScript : MonoBehaviour
         falling = false;
         canMove = true;
         trailRenderer = GetComponent<TrailRenderer>();
+
+        origSpeed = speed; //stores the original speed
+        origJumpPower = jumpPower; //stores the original jump power
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (slowed)
+        {
+            speed = origSpeed * 0.5f;
+            jumpPower = origJumpPower * 0.7f;
+        }
+        else
+        {
+            speed = origSpeed;
+            if (IsGrounded) //means the player only jumps normally again after landing
+            {
+                jumpPower = origJumpPower;
+            }
+        }
         if (canMove) //if canMove is true, allow the user to control the character
         {
             #region Movement
@@ -61,11 +84,25 @@ public class PlayerScript : MonoBehaviour
             #endregion
 
             #region Jumping
+            //coyote time
+            if (IsGrounded) 
+            {
+                coyoteTimeCopy = coyoteTime;
+            }
+            else
+            {
+                coyoteTimeCopy -= Time.deltaTime; //every second not grounded, reduce timer
+            }
+
             //basic jump
             if (Input.GetButtonDown("Jump") && jumpsRemaining > 0) //If a jump key is pressed
             {
-                IsJumping = true; //reset IsJumping
-                jumpsRemaining--;
+                if (jumpsRemaining == 2 && coyoteTimeCopy <= 0f) //if the player presses the jump button too late
+                {
+                    jumpsRemaining--; 
+                }
+                IsJumping = true;
+                jumpsRemaining --;
             }
 
             //variable jump height
@@ -85,6 +122,10 @@ public class PlayerScript : MonoBehaviour
             {
                 IsJumping = false;
                 maxJumpTimeCopy += 0.08f; //adds a small amount of jump time for a second jump
+                if (maxJumpTimeCopy > 0.3f) //limits max jump time
+                {
+                    maxJumpTimeCopy = 0.3f;
+                }
             }
 
             //clamping/limiting max fall speed
@@ -161,6 +202,11 @@ public class PlayerScript : MonoBehaviour
             maxJumpTimeCopy = maxJumpTime; //assign maxJumpTime to maxJumpTimeCopy
             falling = false;
         }
+
+        if (collision.gameObject.CompareTag("StickyFloor"))
+        {
+            slowed = true;
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision) //when leaving the ground
@@ -170,10 +216,11 @@ public class PlayerScript : MonoBehaviour
             IsGrounded = false;
             falling = true;
             rb.gravityScale *= hangTimeMultiplier; //set the player's gravity to the second half of the jump stage
-            if (jumpsRemaining == 2) //if the player walks off a platform
-            {
-                jumpsRemaining --; //lose a jump
-            }
+        }
+
+        if (collision.gameObject.CompareTag("StickyFloor"))
+        {
+            slowed = false;
         }
     }
 }

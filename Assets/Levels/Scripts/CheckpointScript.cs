@@ -10,7 +10,7 @@ public class CheckpointScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider) //If something collides with it
     {
-        if (!IsTriggered)
+        if (!IsTriggered) //if IsTriggered is false
         {
             if (collider.gameObject.CompareTag("Player")) //If it collides with something with the tag 'Player' (the player)
             {

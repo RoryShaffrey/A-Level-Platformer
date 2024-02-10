@@ -11,9 +11,9 @@ public class BouncePadScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            //REMOVE THIS COMMENT WHEN DONE - "ForceMod2D.Impulse" is a force mode that applies an INSTANT force to the object
+            //REMOVE THIS COMMENT WHEN DONE - "ForceMode2D.Impulse" is a force mode that applies an INSTANT force to the object
             collision.gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse); //add a vertical force of 20 to the player
-            bouncePadAnimation.Play("BouncePadJump", 0, 0f);
+            bouncePadAnimation.Play("BouncePadJump", 0, 0f); //triggers the bouncepad animation from the first frame
         }
     }
 }

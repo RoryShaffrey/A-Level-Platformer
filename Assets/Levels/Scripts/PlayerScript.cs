@@ -63,6 +63,7 @@ public class PlayerScript : MonoBehaviour
                 jumpPower = origJumpPower;
             }
         }
+
         if (canMove) //if canMove is true, allow the user to control the character
         {
             #region Movement
@@ -99,7 +100,7 @@ public class PlayerScript : MonoBehaviour
             {
                 if (jumpsRemaining == 2 && coyoteTimeCopy <= 0f) //if the player presses the jump button too late
                 {
-                    jumpsRemaining--; 
+                    jumpsRemaining--; //lose an extra jump
                 }
                 IsJumping = true;
                 jumpsRemaining --;
@@ -164,7 +165,7 @@ public class PlayerScript : MonoBehaviour
         {
             rb.velocity = new Vector2(0, 0);
         }
-    }
+    }   
 
     private IEnumerator StopDash()
     {

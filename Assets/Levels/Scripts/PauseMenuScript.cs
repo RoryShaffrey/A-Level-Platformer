@@ -69,7 +69,7 @@ public class PauseMenuScript : MonoBehaviour
         inputManager.ApplyModifiedProperties();
     }
 
-    public void OnDashClick() //when the button is clicked
+    public void OnDashClick() //when the dash button is clicked
     {
         dashText.text = "...";
         awaitingDashInput = true;
@@ -77,7 +77,7 @@ public class PauseMenuScript : MonoBehaviour
         backButton.SetActive(false); //deactivate back button
     }
 
-    public void OnPauseClick() //when the button is clicked
+    public void OnPauseClick() //when the pause button is clicked
     {
         pauseText.text = "...";
         awaitingPauseInput = true;

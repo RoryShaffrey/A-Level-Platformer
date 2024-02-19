@@ -158,7 +158,7 @@ Transform:
   - {fileID: 1921770051}
   - {fileID: 1334010012}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &297305582
 PrefabInstance:
@@ -173,7 +173,7 @@ PrefabInstance:
       objectReference: {fileID: 1520019937}
     - target: {fileID: 4160291125775160200, guid: 3316aef26b21cab40ae4a7f80bac5060, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4160291125775160200, guid: 3316aef26b21cab40ae4a7f80bac5060, type: 3}
       propertyPath: m_LocalPosition.x
@@ -577,7 +577,7 @@ Transform:
   - {fileID: 1370562732}
   - {fileID: 556589310}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &889428028
 GameObject:
@@ -608,7 +608,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1148518534
 GameObject:
@@ -1158,7 +1158,7 @@ Transform:
   - {fileID: 2072668835}
   - {fileID: 2019167111}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1520019936
 PrefabInstance:
@@ -1169,7 +1169,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3081327840194762781, guid: af726b9aebb4b1d43a746b62b883eca0, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3081327840194762781, guid: af726b9aebb4b1d43a746b62b883eca0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1554,7 +1554,7 @@ Transform:
   - {fileID: 1243807579}
   - {fileID: 1338280769}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1921770049
 GameObject:
@@ -4269,6 +4269,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2830958082575177948, guid: 9697f3243340c6a439afabe4a9490672, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2830958083361321561, guid: 9697f3243340c6a439afabe4a9490672, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3626027282431706250, guid: 9697f3243340c6a439afabe4a9490672, type: 3}
       propertyPath: m_Camera
       value: 

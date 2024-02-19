@@ -7,9 +7,10 @@ using UnityEngine.UI; //allows Image - for editing UI
 
 public class StartMenuScript : MonoBehaviour
 {
+    #region variables
     [SerializeField] GameObject ConfirmationWindow;
+    [SerializeField] GameObject SettingsMenu;
     
-    public GameObject SettingsMenu;
     public TMPro.TextMeshProUGUI dashText;
     public GameObject dashButton;
     private bool awaitingDashInput = false;
@@ -20,14 +21,10 @@ public class StartMenuScript : MonoBehaviour
     private bool validPauseKey = true;
     private string pauseKey = "Escape";
     public GameObject backButton;
+    #endregion
     
     #region Start Menu (and confirmation window)
     // Start is called before the first frame update
-    public void Start() //used to fix this bug bug where the settings icon is not visible
-    {
-        Canvas.ForceUpdateCanvases(); //force the canvas to update
-    }
-
     public void Play() //can't use "start" as it is a keyword which will instantly run this code as soon as the game loads
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); //goes to the next scene (the first level)
@@ -51,10 +48,10 @@ public class StartMenuScript : MonoBehaviour
     #region Settings Menu
     public void KeyRebind(string name, string Pkey)
     {
-        SerializedObject inputManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]);
-        SerializedProperty axesProperty = inputManager.FindProperty("m_Axes");
+        SerializedObject inputManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]); //loads the input manager file
+        SerializedProperty axesProperty = inputManager.FindProperty("m_Axes"); //finds the input settings
 
-        // Iterate through each input setting
+        // iterate through each input setting
         for (int i = 0; i < axesProperty.arraySize; i++) //iterate through each axes/input setting
         {
             SerializedProperty axis = axesProperty.GetArrayElementAtIndex(i); //stores the current 'i' input setting
@@ -100,17 +97,16 @@ public class StartMenuScript : MonoBehaviour
         {
             foreach (KeyCode keycode in System.Enum.GetValues(typeof(KeyCode))) //Search through all possible keys that can be pressed
             {
-                if (Input.GetKeyDown(keycode)) //if the user presses a key and the pause menu is visible
+                if (Input.GetKeyDown(keycode)) //if the user presses a key
                 {
                     string keyPressed = keycode.ToString(); //Convert the pressed key to a string
-                    KeyRebind("Dash", keyPressed);
+                    KeyRebind("Dash", keyPressed); //calls the KeyRebind function
                     if (validDashKey) //if the user presses a key that is not the mouse button or the pause key
                     {
                         dashText.text = keyPressed; //update the button text with the new key
                         awaitingDashInput = false;
                         dashButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
-                        break; //break the loop
                     }
                     else //restart the process
                     {
@@ -134,7 +130,6 @@ public class StartMenuScript : MonoBehaviour
                         awaitingPauseInput = false;
                         pauseButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
-                        break; //break the loop
                     }
                     else //restart the process
                     {
@@ -147,7 +142,7 @@ public class StartMenuScript : MonoBehaviour
 
     public void OnDashClick() //when the button is clicked
     {
-        dashText.text = "...";
+        dashText.text = "..."; //replaces text in button with "..."
         awaitingDashInput = true;
         dashButton.GetComponent<Image>().color = new Color32(212, 0, 0, 255); //change the button's colour to red
         backButton.SetActive(false); //deactivate back button

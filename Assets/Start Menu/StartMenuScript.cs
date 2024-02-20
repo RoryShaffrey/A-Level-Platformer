@@ -21,6 +21,9 @@ public class StartMenuScript : MonoBehaviour
     private bool validPauseKey = true;
     private string pauseKey = "Escape";
     public GameObject backButton;
+
+    string[] inputtedKeys = {"LeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
+    string[] recognisedKeys = {"left shift", "left ctrl", "right shift", "right ctrl", "left alt", "right alt", "mouse 1"}; //translated keys that are recognised by the input manager
     #endregion
     
     #region Start Menu (and confirmation window)
@@ -48,10 +51,10 @@ public class StartMenuScript : MonoBehaviour
     #region Settings Menu
     public void KeyRebind(string name, string Pkey)
     {
-        SerializedObject inputManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]); //loads the input manager file
-        SerializedProperty axesProperty = inputManager.FindProperty("m_Axes"); //finds the input settings
+        SerializedObject inputManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]);
+        SerializedProperty axesProperty = inputManager.FindProperty("m_Axes");
 
-        // iterate through each input setting
+        // Iterate through each input setting
         for (int i = 0; i < axesProperty.arraySize; i++) //iterate through each axes/input setting
         {
             SerializedProperty axis = axesProperty.GetArrayElementAtIndex(i); //stores the current 'i' input setting
@@ -62,9 +65,12 @@ public class StartMenuScript : MonoBehaviour
                 if (Pkey != "Mouse0" && Pkey != pauseText.text) //prevents bugs
                 {
                     SerializedProperty keyToPress = axis.FindPropertyRelative("positiveButton");
-                    if(Pkey == "LeftShift") //fixes bug
+                    for (int j = 0; j < inputtedKeys.Length; j++) //iterate through all possible 'buggy' keys
                     {
-                        Pkey = "left shift";
+                        if (Pkey == inputtedKeys[j]) //if the inputted key is the same as a key in the array
+                        {
+                            Pkey = recognisedKeys[j]; //translate the inputted key to a key the input manager can recognise
+                        }
                     }
                     keyToPress.stringValue = Pkey.ToLower(); //sets the new input key - must be lowercase
                 }

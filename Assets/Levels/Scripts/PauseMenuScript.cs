@@ -24,7 +24,7 @@ public class PauseMenuScript : MonoBehaviour
 
     private bool pauseVisible = true;
 
-    string[] inputtedKeys = {"LeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
+    string[] inputtedKeys = {"sLeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
     string[] recognisedKeys = {"left shift", "left ctrl", "right shift", "right ctrl", "left alt", "right alt", "mouse 1"}; //translated keys that are recognised by the input manager
 
     #region Settings Menu
@@ -168,7 +168,7 @@ public class PauseMenuScript : MonoBehaviour
             }
         }
     }
-    
+
     #region Pause Menu (and confirmation window)
     void Pause() //when the escape key is pressed
     {

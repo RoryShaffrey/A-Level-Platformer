@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement; //for moving between scenes
 using UnityEditor; //allows SeralizedObject & SerializedProperty
-using UnityEngine.UI; //allows Image - for editing UI
+using UnityEngine.UI; //allows 'Image'
+using TMPro; //allows TextMeshProUGUI
+using System.IO; //allows File
 
 public class StartMenuScript : MonoBehaviour
 {
     #region variables
     [SerializeField] GameObject ConfirmationWindow;
     [SerializeField] GameObject SettingsMenu;
+    [SerializeField] GameObject LoginMenu;
+    [SerializeField] GameObject SignUpMenu;
     
     public TMPro.TextMeshProUGUI dashText;
     public GameObject dashButton;
@@ -24,8 +28,29 @@ public class StartMenuScript : MonoBehaviour
 
     string[] inputtedKeys = {"LeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
     string[] recognisedKeys = {"left shift", "left ctrl", "right shift", "right ctrl", "left alt", "right alt", "mouse 1"}; //translated keys that are recognised by the input manager
+    
+    public TMP_InputField usernameLoginInput;
+    public TMP_InputField passwordLoginInput;
+    public TMP_InputField usernameRegisterInput;
+    public TMP_InputField passwordRegisterInput;
+    private string jsonFile = "C:\\Users\\rorys\\Documents\\GitHub\\A-Level-Platformer\\Assets\\Start Menu\\profiles.json";
+    private bool isLoggedIn = false;
     #endregion
     
+    void Start() 
+    {
+        if (PlayerPrefs.GetString("dashKey") == "") //if no dash key has been previously set
+        {
+            PlayerPrefs.SetString("dashKey", "LeftShift"); //set dash text to "LeftShift"
+        }
+        dashText.text = PlayerPrefs.GetString("dashKey"); //set dash text to saved key
+        if (PlayerPrefs.GetString("pauseKey") == "") //if no pause key has been previously set
+        {
+            PlayerPrefs.SetString("pauseKey", "Escape"); //set pause text to "Escape"
+        }
+        pauseText.text = PlayerPrefs.GetString("pauseKey"); //set pause text to saved key
+    }
+
     #region Start Menu (and confirmation window)
     // Start is called before the first frame update
     public void Play() //can't use "start" as it is a keyword which will instantly run this code as soon as the game loads
@@ -103,16 +128,18 @@ public class StartMenuScript : MonoBehaviour
         {
             foreach (KeyCode keycode in System.Enum.GetValues(typeof(KeyCode))) //Search through all possible keys that can be pressed
             {
-                if (Input.GetKeyDown(keycode)) //if the user presses a key
+                if (Input.GetKeyDown(keycode)) //if the user presses a key and the pause menu is visible
                 {
                     string keyPressed = keycode.ToString(); //Convert the pressed key to a string
-                    KeyRebind("Dash", keyPressed); //calls the KeyRebind function
+                    KeyRebind("Dash", keyPressed);
                     if (validDashKey) //if the user presses a key that is not the mouse button or the pause key
                     {
                         dashText.text = keyPressed; //update the button text with the new key
                         awaitingDashInput = false;
                         dashButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
+                        PlayerPrefs.SetString("dashKey", keyPressed); //save the new key to PlayerPrefs
+                        break; //break the loop
                     }
                     else //restart the process
                     {
@@ -136,6 +163,8 @@ public class StartMenuScript : MonoBehaviour
                         awaitingPauseInput = false;
                         pauseButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
+                        PlayerPrefs.SetString("pauseKey", keyPressed); //save the new key to PlayerPrefs
+                        break; //break the loop
                     }
                     else //restart the process
                     {
@@ -170,6 +199,104 @@ public class StartMenuScript : MonoBehaviour
     public void CloseSettingsMenu() //when the 'Back' button is pressed
     {
         SettingsMenu.SetActive(false); //hide the settings menu
+    }
+    #endregion
+
+    #region Login Menu
+    public void OpenLoginMenu() //when the 'Login' button is pressed
+    {
+        LoginMenu.SetActive(true); //show the login menu
+    }
+
+    public void CloseLoginMenu() //when the 'Back' button is pressed
+    {
+        LoginMenu.SetActive(false); //hide the login menu
+    }
+
+    [System.Serializable]
+    public class Profile //represents one profile
+    {
+        public string username;
+        public string password;
+        public int highScore;
+    }
+    [System.Serializable]
+    public class ProfileList //list of profiles
+    {
+        public List<Profile> profiles;
+    }
+
+    public void Login() //when the 'Submit' button is pressed
+    {
+        string jsonString = File.ReadAllText(jsonFile);
+        ProfileList profileList = JsonUtility.FromJson<ProfileList>(jsonString);
+
+        string username = usernameLoginInput.text;
+        string password = passwordLoginInput.text;
+
+        foreach (Profile profile in profileList.profiles)
+        {
+            if (username == profile.username && password == profile.password)
+            {
+                isLoggedIn = true;
+                Debug.Log("Logged in as " + username);
+                break;
+            }
+        }
+        if (!isLoggedIn) {
+        Debug.Log("Invalid username or password");}
+    }
+    #endregion
+
+    #region Sign-Up Menu
+    public void OpenSignUpMenu() //when the 'Sign-Up' button is pressed
+    {
+        SignUpMenu.SetActive(true); //show the sign-up menu
+    }
+
+    public void CloseSignUpMenu() //when the 'Back' button is pressed
+    {
+        SignUpMenu.SetActive(false); //hide the sign-up menu
+    }
+
+    public void Register() //when the 'Submit' button is pressed
+    {
+        string jsonString = File.ReadAllText(jsonFile);
+        ProfileList profileList = JsonUtility.FromJson<ProfileList>(jsonString);
+
+        string username = usernameRegisterInput.text;
+        string password = passwordRegisterInput.text;
+
+        #region validation
+        if (username == "" || password == "") //if the username or password is empty
+        {
+            Debug.Log("Username or password is empty");
+            return;
+        }
+        foreach (Profile profile in profileList.profiles) //iterate through all current profiles
+        {
+            if (username == profile.username) //if the username is already taken
+            {
+                Debug.Log("Username is already taken");
+                return;
+            }
+        }
+        if (password.Length < 8) //if the password is less than 8 characters
+        {
+            Debug.Log("Password is too short");
+            return;
+        }
+        #endregion
+        Profile newProfile = new Profile(); //create new profile
+        newProfile.username = username; //assign username
+        newProfile.password = password; //assign password
+        newProfile.highScore = 0; //assign high score
+
+        profileList.profiles.Add(newProfile); //add the new profile to the list of profiles
+
+        string json = JsonUtility.ToJson(profileList);
+        File.WriteAllText(jsonFile, json); //update the file with the new list
+        Debug.Log("Account made");
     }
     #endregion
 }

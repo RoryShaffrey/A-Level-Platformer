@@ -24,7 +24,7 @@ public class PauseMenuScript : MonoBehaviour
 
     private bool pauseVisible = true;
 
-    string[] inputtedKeys = {"sLeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
+    string[] inputtedKeys = {"LeftShift", "LeftControl", "RightShift", "RightControl", "LeftAlt", "RightAlt", "Mouse1"}; //string keys that are pressed by the user
     string[] recognisedKeys = {"left shift", "left ctrl", "right shift", "right ctrl", "left alt", "right alt", "mouse 1"}; //translated keys that are recognised by the input manager
 
     #region Settings Menu
@@ -103,6 +103,21 @@ public class PauseMenuScript : MonoBehaviour
         pauseVisible = true;
     }
     #endregion
+    // Start is called before the first frame update
+    void Start()
+    {
+        //if (loggedIn) {get player prefs}
+        if (PlayerPrefs.GetString("dashKey") == "") //if no dash key has been previously set
+        {
+            PlayerPrefs.SetString("dashKey", "LeftShift"); //set dash text to "LeftShift"
+        }
+        dashText.text = PlayerPrefs.GetString("dashKey"); //set dash text to saved key
+        if (PlayerPrefs.GetString("pauseKey") == "") //if no pause key has been previously set
+        {
+            PlayerPrefs.SetString("pauseKey", "Escape"); //set pause text to "Escape"
+        }
+        pauseText.text = PlayerPrefs.GetString("pauseKey"); //set pause text to saved key
+    }
 
     // Update is called once per frame
     private void Update()
@@ -134,6 +149,7 @@ public class PauseMenuScript : MonoBehaviour
                         awaitingDashInput = false;
                         dashButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
+                        PlayerPrefs.SetString("dashKey", keyPressed); //save the new key to PlayerPrefs
                         break; //break the loop
                     }
                     else //restart the process
@@ -158,6 +174,7 @@ public class PauseMenuScript : MonoBehaviour
                         awaitingPauseInput = false;
                         pauseButton.GetComponent<Image>().color = new Color32(255, 255, 255, 255); //change colour of button back
                         backButton.SetActive(true); //reactivate back button
+                        PlayerPrefs.SetString("pauseKey", keyPressed); //save the new key to PlayerPrefs
                         break; //break the loop
                     }
                     else //restart the process

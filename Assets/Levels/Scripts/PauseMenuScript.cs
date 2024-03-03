@@ -203,6 +203,7 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Quit() //when the 'Yes' button is pressed
     {
+        PlayerPrefs.DeleteAll(); //deletes all player preferences
         Application.Quit(); //quit the game
     }
 

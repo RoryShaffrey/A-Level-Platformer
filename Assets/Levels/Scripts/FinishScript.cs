@@ -7,12 +7,18 @@ public class FinishScript : MonoBehaviour
 {
     public Animator crossfade;
     private float transitionTime = 0.75f; //default value 0.75 seconds
+    public StopwatchScript StopwatchScript; //references the StopwatchScript
 
     private void OnTriggerEnter2D(Collider2D collider) //If something collides with it
     {
         if (collider.gameObject.CompareTag("Player")) //If it collides with something with the tag 'Player' (the player)
         {
             PlayerScript player = collider.GetComponent<PlayerScript>(); //references the PlayerScript
+            if (SceneManager.GetActiveScene().buildIndex == 3) //if the current scene is the first level
+            {
+                StopwatchScript = FindObjectOfType<StopwatchScript>(); //references the StopwatchScript
+                StopwatchScript.playing = false; //stops the stopwatch
+            }
             StartCoroutine(LoadScene(player)); //calls the function LoadScene
         }
     }

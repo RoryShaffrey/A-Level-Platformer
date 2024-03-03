@@ -33,12 +33,16 @@ public class StartMenuScript : MonoBehaviour
     public TMP_InputField passwordLoginInput;
     public TMP_InputField usernameRegisterInput;
     public TMP_InputField passwordRegisterInput;
+    public TMPro.TextMeshProUGUI invalidLoginText;
+    public TMPro.TextMeshProUGUI invalidRegisterText;
     private string jsonFile = "C:\\Users\\rorys\\Documents\\GitHub\\A-Level-Platformer\\Assets\\Start Menu\\profiles.json";
     private bool isLoggedIn = false;
     #endregion
     
     void Start() 
     {
+        PlayerPrefs.SetString("isLoggedIn", "false");
+
         if (PlayerPrefs.GetString("dashKey") == "") //if no dash key has been previously set
         {
             PlayerPrefs.SetString("dashKey", "LeftShift"); //set dash text to "LeftShift"
@@ -55,11 +59,12 @@ public class StartMenuScript : MonoBehaviour
     // Start is called before the first frame update
     public void Play() //can't use "start" as it is a keyword which will instantly run this code as soon as the game loads
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); //goes to the next scene (the first level)
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 3); //goes to the next scene (the first level)
     }
 
     public void Quit() //when the 'Confirm' button is pressed
     {
+        PlayerPrefs.DeleteAll(); //deletes all player preferences
         Application.Quit(); //quits the application
     }
 
@@ -219,7 +224,10 @@ public class StartMenuScript : MonoBehaviour
         public string username;
         public string password;
         public int highScore;
+        public int rating;
+        public string comment;
     }
+
     [System.Serializable]
     public class ProfileList //list of profiles
     {
@@ -228,23 +236,31 @@ public class StartMenuScript : MonoBehaviour
 
     public void Login() //when the 'Submit' button is pressed
     {
-        string jsonString = File.ReadAllText(jsonFile);
+        string jsonString = File.ReadAllText(jsonFile); //stores the current JSON file contents
         ProfileList profileList = JsonUtility.FromJson<ProfileList>(jsonString);
 
         string username = usernameLoginInput.text;
         string password = passwordLoginInput.text;
 
-        foreach (Profile profile in profileList.profiles)
+        foreach (Profile profile in profileList.profiles) //iterates through all profiles
         {
-            if (username == profile.username && password == profile.password)
+            if (username == profile.username && password == profile.password) //if there is a profile with a matching username and password
             {
                 isLoggedIn = true;
-                Debug.Log("Logged in as " + username);
-                break;
+                PlayerPrefs.SetString("username", username);
+                PlayerPrefs.SetInt("highScore", profile.highScore);
+                PlayerPrefs.SetString("isLoggedIn", "true");
+                invalidLoginText.color = new Color32(0, 255, 0, 255); //make the text green
+                invalidLoginText.text = "Logged in as " + username;
+                StartCoroutine(ClearInvalidText());
+                break; //break the loop
             }
         }
         if (!isLoggedIn) {
-        Debug.Log("Invalid username or password");}
+            invalidLoginText.color = new Color32(255, 0, 0, 255); //make the text red
+            invalidLoginText.text = "Incorrect username or password";
+            StartCoroutine(ClearInvalidText());
+        }
     }
     #endregion
 
@@ -270,20 +286,26 @@ public class StartMenuScript : MonoBehaviour
         #region validation
         if (username == "" || password == "") //if the username or password is empty
         {
-            Debug.Log("Username or password is empty");
+            invalidRegisterText.color = new Color32(255, 0, 0, 255); //make the text red
+            invalidRegisterText.text = "Username or password cannot be empty";
+            StartCoroutine(ClearInvalidText());
             return;
         }
         foreach (Profile profile in profileList.profiles) //iterate through all current profiles
         {
             if (username == profile.username) //if the username is already taken
             {
-                Debug.Log("Username is already taken");
+                invalidRegisterText.color = new Color32(255, 0, 0, 255); //make the text red
+                invalidRegisterText.text = "Username already taken";
+                StartCoroutine(ClearInvalidText());
                 return;
             }
         }
         if (password.Length < 8) //if the password is less than 8 characters
         {
-            Debug.Log("Password is too short");
+            invalidRegisterText.color = new Color32(255, 0, 0, 255); //make the text red
+            invalidRegisterText.text = "Password must be at least 8 characters";
+            StartCoroutine(ClearInvalidText());
             return;
         }
         #endregion
@@ -291,12 +313,35 @@ public class StartMenuScript : MonoBehaviour
         newProfile.username = username; //assign username
         newProfile.password = password; //assign password
         newProfile.highScore = 0; //assign high score
+        newProfile.rating = 0; //assign rating
+        newProfile.comment = ""; //assign comment
 
         profileList.profiles.Add(newProfile); //add the new profile to the list of profiles
 
         string json = JsonUtility.ToJson(profileList);
         File.WriteAllText(jsonFile, json); //update the file with the new list
-        Debug.Log("Account made");
+        PlayerPrefs.SetString("username", username);
+        PlayerPrefs.SetInt("highScore", newProfile.highScore);
+
+        invalidRegisterText.color = new Color32(0, 255, 0, 255); //make the text green
+        invalidRegisterText.text = "Account created, logged in as " + username;
+        PlayerPrefs.SetString("isLoggedIn", "true");
+        StartCoroutine(ClearInvalidText());
     }
     #endregion
+
+    private IEnumerator ClearInvalidText()
+    {
+        yield return new WaitForSeconds(2);
+        invalidRegisterText.text = ""; //clear the register text
+        if (invalidRegisterText.color == new Color32(0, 255, 0, 255)) //if the register text is green
+        {
+            SignUpMenu.SetActive(false);
+        }
+        invalidLoginText.text = ""; //clear the login text
+        if (invalidLoginText.color == new Color32(0, 255, 0, 255)) //if the login text is green
+        {
+            LoginMenu.SetActive(false);
+        }
+    }
 }

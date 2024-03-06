@@ -9,7 +9,7 @@ public class StopwatchScript : MonoBehaviour
     private float currentTime = 0f;
     public TMPro.TextMeshProUGUI stopwatchText;
     public bool playing = true;
-    public int score;
+    private int score;
 
     // Update is called once per frame
     void Update()
@@ -25,4 +25,4 @@ public class StopwatchScript : MonoBehaviour
             PlayerPrefs.SetInt("score", score); //saves the score
         }
     }
-}   
+}

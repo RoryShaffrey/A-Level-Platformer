@@ -50,7 +50,7 @@ public class FnishMenuScript : MonoBehaviour
             else {scoreText.text = "Your score: " + score;}
             highScoreText.text = "High Score: " + PlayerPrefs.GetInt("highScore");
         }
-        else {
+        else { //if the user has not logged in
             congratulationsText.text = "Congratulations Guest!";
             scoreText.text = "Your score: " + score;
             highScoreText.text = ""; //hides the high score text
@@ -86,6 +86,7 @@ public class FnishMenuScript : MonoBehaviour
                 profile.comment = commentField.text; //add the user's comment
                 commentField.text = ""; //clear the user's comment
             }
+            starPressed = false; //reset the starPressed variable
             string json = JsonUtility.ToJson(profileList);
             File.WriteAllText(jsonFile, json); //update the file with the new list
         }
@@ -94,7 +95,9 @@ public class FnishMenuScript : MonoBehaviour
     }
 
     public void Continue() {
-        profile.highScore = PlayerPrefs.GetInt("highScore"); //update the high score
+        if (PlayerPrefs.GetString("isLoggedIn") == "true") {
+            profile.highScore = PlayerPrefs.GetInt("highScore"); //update the high score
+        }
         string json = JsonUtility.ToJson(profileList);
         File.WriteAllText(jsonFile, json); //update the file with the new list
         SceneManager.LoadScene(0); //loads the start menu

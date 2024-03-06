@@ -42,7 +42,7 @@ public class StartMenuScript : MonoBehaviour
     void Start() 
     {
         PlayerPrefs.SetString("isLoggedIn", "false");
-
+        
         if (PlayerPrefs.GetString("dashKey") == "") //if no dash key has been previously set
         {
             PlayerPrefs.SetString("dashKey", "LeftShift"); //set dash text to "LeftShift"
@@ -59,7 +59,7 @@ public class StartMenuScript : MonoBehaviour
     // Start is called before the first frame update
     public void Play() //can't use "start" as it is a keyword which will instantly run this code as soon as the game loads
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 3); //goes to the next scene (the first level)
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); //goes to the next scene (the first level)
     }
 
     public void Quit() //when the 'Confirm' button is pressed
@@ -256,7 +256,7 @@ public class StartMenuScript : MonoBehaviour
                 break; //break the loop
             }
         }
-        if (!isLoggedIn) {
+        if (!isLoggedIn) { //if the user did not enter correct details
             invalidLoginText.color = new Color32(255, 0, 0, 255); //make the text red
             invalidLoginText.text = "Incorrect username or password";
             StartCoroutine(ClearInvalidText());
@@ -265,6 +265,7 @@ public class StartMenuScript : MonoBehaviour
     #endregion
 
     #region Sign-Up Menu
+
     public void OpenSignUpMenu() //when the 'Sign-Up' button is pressed
     {
         SignUpMenu.SetActive(true); //show the sign-up menu
@@ -275,7 +276,7 @@ public class StartMenuScript : MonoBehaviour
         SignUpMenu.SetActive(false); //hide the sign-up menu
     }
 
-    public void Register() //when the 'Submit' button is pressed
+    public void Register() //when the 'Register' button is pressed
     {
         string jsonString = File.ReadAllText(jsonFile);
         ProfileList profileList = JsonUtility.FromJson<ProfileList>(jsonString);
@@ -309,6 +310,7 @@ public class StartMenuScript : MonoBehaviour
             return;
         }
         #endregion
+
         Profile newProfile = new Profile(); //create new profile
         newProfile.username = username; //assign username
         newProfile.password = password; //assign password
